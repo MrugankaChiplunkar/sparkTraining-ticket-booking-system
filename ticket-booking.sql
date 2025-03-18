@@ -1,7 +1,10 @@
+/*Task 1: DATABASE DESIGN
+1. Create the database named "TicketBookingSystem" */
 create database TicketBookingSystem;
 
 use TicketBookingSystem;
 
+/*2. Create tables with appropriate relationships*/
 create table venue(venue_id int primary key auto_increment,
 venue_name varchar(100) not null, address varchar(200) not null);
 
@@ -32,6 +35,7 @@ num_tickets int not null,
 total_cost float not null, booking_date date not null
 );
 
+/*4. Create appropriate Primary Key and Foreign Key constraints for referential integrity. */
 alter table event add constraint fk_booking_id foreign key(booking_id) references booking(booking_id);
 
 alter table booking add constraint fk_customer_id foreign key(customer_id) references customer(customer_id);
