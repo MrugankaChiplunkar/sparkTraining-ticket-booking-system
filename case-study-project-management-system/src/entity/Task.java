@@ -1,6 +1,7 @@
+
 package entity;
 
-public class task {
+public class Task {
 
 	private int task_id;
 	private String task_name;
@@ -9,12 +10,12 @@ public class task {
 	private String status;
 	
 	//default constructor
-	public task() {
+	public Task() {
 		
 	}
 	
 	//parameterized constructor
-	public task(int task_id, String task_name, int project_id, int employee_id, String status)
+	public Task(int task_id, String task_name, int project_id, int employee_id, String status)
 	{
 		this.task_id = task_id;
 		this.task_name = task_name;
@@ -31,7 +32,7 @@ public class task {
 		this.task_id = task_id;
 	}
 	
-	public String getTaskname() {
+	public String getTaskName() {
 		return task_name;
 	}
 	public void setTaskName(String task_name) {
