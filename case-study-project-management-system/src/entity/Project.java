@@ -1,7 +1,8 @@
+
 package entity;
 import java.time.LocalDate;
 
-public class project {
+public class Project {
 	private int project_id;
 	private String project_name;
 	private String project_description;
@@ -9,12 +10,12 @@ public class project {
 	private String status;
 	
 	//default constructor
-	public project() {
+	public Project() {
 		
 	}
 	
 	//parameterized constructor
-	public project(int project_id, String project_name, String project_description, LocalDate startDate, String status)
+	public Project(int project_id, String project_name, String project_description, LocalDate startDate, String status)
 	{
 		this.project_id = project_id;
 		this.project_name = project_name;
