@@ -1,5 +1,7 @@
 package exception;
 
-public class ProjectNotFoundException {
-
+public class ProjectNotFoundException extends Exception {
+	public ProjectNotFoundException(String message) {
+		super(message);
+	}
 }
