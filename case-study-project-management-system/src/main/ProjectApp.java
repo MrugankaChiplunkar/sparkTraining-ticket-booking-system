@@ -1,14 +1,14 @@
 package main;
 import dao.ProjectRepositoryImpl;
-import entity.project;
-import entity.employee;
-import entity.task;
-import exception.ProjectNotFoundException;
+import entity.Project;
+import entity.Employee;
+import entity.Task;
+import exception.TaskNotFoundException;
 import exception.EmployeeNotFoundException;
 import java.time.LocalDate;
 import java.util.Scanner;
 
-public class projectManagementApplication {
+public class ProjectApp {
 
 	public static void main(String[] args) {
 		Scanner scanner = new Scanner(System.in);
@@ -62,8 +62,8 @@ public class projectManagementApplication {
 					System.out.println("Invalid choice! Try again...");
 				}
 			}
-			catch(EmployeeNotFoundException | ProjectNotFoundException) {
-				System.out.println("Error: " + e.getMessage);
+			catch(EmployeeNotFoundException | TaskNotFoundException e) {
+				System.out.println("Error: " + ((Throwable) e).getMessage());
 			}
 		}
 	}
@@ -78,8 +78,9 @@ public class projectManagementApplication {
 	        String gender = scanner.nextLine();
 	        System.out.print("Enter Salary: ");
 	        double salary = scanner.nextDouble();
-
-	        Employee emp = new Employee(0, name, designation, gender, salary, 0);
+	        System.out.println("Enter ID of Project Assigned");
+	        int projectId = scanner.nextInt();
+	        Employee emp = new Employee(0, name, designation, gender, salary, projectId);
 	        if (repo.createEmployee(emp)) {
 	            System.out.println("Employee added successfully!");
 	        } else {
@@ -164,15 +165,16 @@ public class projectManagementApplication {
 	        }
 	    }
 
-	    private static void deleteTask(Scanner scanner, ProjectRepositoryImpl repo) {
+	    private static void deleteTask (Scanner scanner, ProjectRepositoryImpl repo) throws TaskNotFoundException{
 	        System.out.print("Enter Task ID to delete: ");
-	        int taskId = scanner.nextInt();
-	        if (repo.deleteTask(taskId)) {
+	        int taskId = scanner.nextInt();  // Variable is declared as taskId
+	        if (repo.deleteTask(taskId)) {   // Use taskId (not task_id)
 	            System.out.println("Task deleted successfully.");
 	        } else {
 	            System.out.println("Failed to delete task.");
 	        }
 	    }
+
 
 	    private static void listEmployeeProjects(Scanner scanner, ProjectRepositoryImpl repo) {
 	        System.out.print("Enter Employee ID: ");
@@ -187,4 +189,3 @@ public class projectManagementApplication {
 	
 	
 	
-}
