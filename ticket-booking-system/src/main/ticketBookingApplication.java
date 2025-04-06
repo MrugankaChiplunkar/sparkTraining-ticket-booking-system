@@ -60,7 +60,7 @@ public class TicketBookingSystem {
     }
 
     private static void createEvent(Scanner scanner, EventServiceProviderImpl eventService) {
-        scanner.nextLine(); // Consume newline
+        scanner.nextLine();
         System.out.print("Enter Event Name: ");
         String name = scanner.nextLine();
         System.out.print("Enter Event Date (YYYY-MM-DD): ");
@@ -75,8 +75,8 @@ public class TicketBookingSystem {
         int availableSeats = scanner.nextInt();
         System.out.print("Enter Ticket Price: ");
         double price = scanner.nextDouble();
-        int bookingId = 0; // Can be null or 0 depending on schema
-        scanner.nextLine(); // Consume newline
+        int bookingId = 0; 
+        scanner.nextLine(); 
         System.out.print("Enter Event Type (concert/movie/sports): ");
         String type = scanner.nextLine();
 
@@ -133,7 +133,7 @@ public class TicketBookingSystem {
         String eventName = scanner.nextLine();
         System.out.print("Enter Number of Tickets: ");
         int tickets = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+        scanner.nextLine(); 
         System.out.print("Enter Booking Date (YYYY-MM-DD): ");
         LocalDate bookingDate = LocalDate.parse(scanner.nextLine());
         System.out.print("Enter Customer Name: ");
