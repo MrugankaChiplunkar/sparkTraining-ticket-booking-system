@@ -1,5 +1,7 @@
 package exception;
 
-public class InvalidBookingIDException {
-
+public class InvalidBookingIDException extends Exception{
+	public InvalidBookingIDException(String message) {
+		super(message);
+	}
 }
