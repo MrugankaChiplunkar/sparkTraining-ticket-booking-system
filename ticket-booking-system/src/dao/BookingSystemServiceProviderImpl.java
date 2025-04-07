@@ -22,20 +22,18 @@ public class BookingSystemServiceProviderImpl implements IBookingSystemServicePr
             stmt.setString(1, event_name);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                events.add(new Event(
-                        rs.getInt("event_id"),
-                        rs.getString("event_name"),
-                        null, // date
-                        null, // time
-                        rs.getInt("available_seats"),
-                        0, 0, 0, 0, null
-                ));
+                Event event = new Event(); // use empty constructor
+                event.setEventId(rs.getInt("event_id"));
+                event.setEventName(rs.getString("event_name"));
+                event.setAvailableSeats(rs.getInt("available_seats"));
+                events.add(event);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return events;
     }
+
 
     @Override
     public boolean calculateBookingCost(int num_tickets, String event_name) throws SQLException {
@@ -56,11 +54,12 @@ public class BookingSystemServiceProviderImpl implements IBookingSystemServicePr
     }
 
     @Override
-    public boolean bookTickets(String event_name, int num_tickets, LocalDate booking_date, String customer_name,
-                               String email, String phone_number) {
-        String getEventSQL = "SELECT event_id, available_seats FROM event WHERE event_name = ?";
-        String insertCustomerSQL = "INSERT INTO customer (name, email, phone_number) VALUES (?, ?, ?)";
-        String insertBookingSQL = "INSERT INTO booking (event_id, customer_id, num_tickets, booking_date) VALUES (?, ?, ?, ?)";
+    public boolean bookTickets(String event_name, int num_tickets, LocalDate booking_date,
+                               String customer_name, String email, String phone_number) {
+
+        String getEventSQL = "SELECT event_id, available_seats, ticket_price FROM event WHERE event_name = ?";
+        String insertCustomerSQL = "INSERT INTO customer (customer_name, email, phone_number) VALUES (?, ?, ?)";
+        String insertBookingSQL = "INSERT INTO booking (event_id, customer_id, num_tickets, booking_date, total_cost) VALUES (?, ?, ?, ?, ?)";
         String updateSeatsSQL = "UPDATE event SET available_seats = available_seats - ? WHERE event_id = ?";
 
         try {
@@ -68,24 +67,30 @@ public class BookingSystemServiceProviderImpl implements IBookingSystemServicePr
 
             int event_id = -1;
             int available_seats = 0;
+            float ticket_price = 0;
 
+            // Step 1: Get Event Info
             try (PreparedStatement stmt = conn.prepareStatement(getEventSQL)) {
                 stmt.setString(1, event_name);
                 ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
                     event_id = rs.getInt("event_id");
                     available_seats = rs.getInt("available_seats");
+                    ticket_price = rs.getFloat("ticket_price");
                 } else {
                     throw new EventNotFoundException("Event not found: " + event_name);
                 }
             }
 
+            // Step 2: Check Seat Availability
             if (available_seats < num_tickets) {
                 System.out.println("Not enough seats available.");
                 return false;
             }
 
             int customer_id = -1;
+
+            // Step 3: Insert Customer
             try (PreparedStatement stmt = conn.prepareStatement(insertCustomerSQL, Statement.RETURN_GENERATED_KEYS)) {
                 stmt.setString(1, customer_name);
                 stmt.setString(2, email);
@@ -97,14 +102,20 @@ public class BookingSystemServiceProviderImpl implements IBookingSystemServicePr
                 }
             }
 
+            // Step 4: Calculate Total Cost (as float)
+            float totalCost = ticket_price * num_tickets;
+
+            // Step 5: Insert Booking
             try (PreparedStatement stmt = conn.prepareStatement(insertBookingSQL)) {
                 stmt.setInt(1, event_id);
                 stmt.setInt(2, customer_id);
                 stmt.setInt(3, num_tickets);
                 stmt.setDate(4, Date.valueOf(booking_date));
+                stmt.setFloat(5, totalCost);
                 stmt.executeUpdate();
             }
 
+            // Step 6: Update Available Seats
             try (PreparedStatement stmt = conn.prepareStatement(updateSeatsSQL)) {
                 stmt.setInt(1, num_tickets);
                 stmt.setInt(2, event_id);
@@ -125,6 +136,7 @@ public class BookingSystemServiceProviderImpl implements IBookingSystemServicePr
         return false;
     }
 
+
     @Override
     public boolean cancelBooking(int booking_id) {
         String getBookingSQL = "SELECT event_id, num_tickets FROM booking WHERE booking_id = ?";
@@ -137,6 +149,7 @@ public class BookingSystemServiceProviderImpl implements IBookingSystemServicePr
             int event_id = -1;
             int num_tickets = 0;
 
+            // Get event_id and num_tickets from the booking
             try (PreparedStatement stmt = conn.prepareStatement(getBookingSQL)) {
                 stmt.setInt(1, booking_id);
                 ResultSet rs = stmt.executeQuery();
@@ -148,11 +161,13 @@ public class BookingSystemServiceProviderImpl implements IBookingSystemServicePr
                 }
             }
 
+            // Delete the booking
             try (PreparedStatement stmt = conn.prepareStatement(deleteBookingSQL)) {
                 stmt.setInt(1, booking_id);
                 stmt.executeUpdate();
             }
 
+            // Update available seats in the event
             try (PreparedStatement stmt = conn.prepareStatement(updateSeatsSQL)) {
                 stmt.setInt(1, num_tickets);
                 stmt.setInt(2, event_id);
@@ -174,9 +189,12 @@ public class BookingSystemServiceProviderImpl implements IBookingSystemServicePr
         return false;
     }
 
+
+
+
     @Override
     public boolean getBookingDetails(int booking_id) {
-        String sql = "SELECT b.booking_id, c.name AS customer_name, e.event_name, b.num_tickets, b.booking_date " +
+    	String sql = "SELECT b.booking_id, c.customer_name AS customer_name, e.event_name, b.num_tickets, b.booking_date " +
                 "FROM booking b " +
                 "JOIN customer c ON b.customer_id = c.customer_id " +
                 "JOIN event e ON b.event_id = e.event_id " +
