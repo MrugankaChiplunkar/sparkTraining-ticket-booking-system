@@ -14,7 +14,7 @@ import java.util.Scanner;
 
 public class TicketBookingSystem {
 
-    public static void main(String[] args) throws EventNotFoundException {
+    public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         EventServiceProviderImpl eventService = new EventServiceProviderImpl();
         BookingSystemServiceProviderImpl bookingService = new BookingSystemServiceProviderImpl();
@@ -50,7 +50,7 @@ public class TicketBookingSystem {
                 }
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input type! Please enter numbers only.");
-                scanner.nextLine(); // Clear the buffer
+                scanner.nextLine(); 
             } catch (InvalidBookingIDException e) {
                 System.out.println("Error: " + e.getMessage());
             } catch (Exception e) {
@@ -60,7 +60,7 @@ public class TicketBookingSystem {
     }
 
     private static void createEvent(Scanner scanner, EventServiceProviderImpl eventService) {
-        scanner.nextLine();
+        scanner.nextLine(); 
         System.out.print("Enter Event Name: ");
         String name = scanner.nextLine();
         System.out.print("Enter Event Date (YYYY-MM-DD): ");
@@ -76,11 +76,20 @@ public class TicketBookingSystem {
         System.out.print("Enter Ticket Price: ");
         double price = scanner.nextDouble();
         int bookingId = 0; 
-        scanner.nextLine(); 
+        scanner.nextLine();
         System.out.print("Enter Event Type (concert/movie/sports): ");
         String type = scanner.nextLine();
 
-        Event event = new Event(0, name, date, time, venueId, availableSeats, totalSeats, price, bookingId, type);
+        Event event = new Event();
+        event.setEventName(name);
+        event.setEventDate(date);
+        event.setEventTime(time);
+        event.setVenueId(venueId);
+        event.setTotalSeats(totalSeats);
+        event.setAvailableSeats(availableSeats);
+        event.setTicketPrice(price);
+        event.setEventType(type);
+
         boolean created = eventService.createEvent(event);
         System.out.println(created ? "Event created successfully!" : "Failed to create event.");
     }
@@ -108,7 +117,7 @@ public class TicketBookingSystem {
             System.out.println("No tickets available for the given event.");
         } else {
             for (Event e : events) {
-                System.out.println("Event ID: " + e.getEventId() + " | Name: " + e.getEventName() + " | Available Tickets: " + e.getVenueId());
+                System.out.println("Event ID: " + e.getEventId() + " | Name: " + e.getEventName() + " | Available Tickets: " + e.getAvailableSeats());
             }
         }
     }
@@ -133,7 +142,7 @@ public class TicketBookingSystem {
         String eventName = scanner.nextLine();
         System.out.print("Enter Number of Tickets: ");
         int tickets = scanner.nextInt();
-        scanner.nextLine(); 
+        scanner.nextLine();
         System.out.print("Enter Booking Date (YYYY-MM-DD): ");
         LocalDate bookingDate = LocalDate.parse(scanner.nextLine());
         System.out.print("Enter Customer Name: ");
@@ -156,12 +165,13 @@ public class TicketBookingSystem {
         }
     }
 
-    private static void getBookingDetails(Scanner scanner, BookingSystemServiceProviderImpl bookingService) throws InvalidBookingIDException {
+    private static void getBookingDetails(Scanner scanner, BookingSystemServiceProviderImpl bookingService) {
         System.out.print("Enter Booking ID: ");
         int bookingId = scanner.nextInt();
         boolean found = bookingService.getBookingDetails(bookingId);
         if (!found) {
-            throw new InvalidBookingIDException("No booking found with ID: " + bookingId);
+            System.out.println("Error: No booking found with ID: " + bookingId);
         }
     }
+
 }
