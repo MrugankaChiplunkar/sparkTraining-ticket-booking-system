@@ -22,7 +22,7 @@ public class BookingSystemServiceProviderImpl implements IBookingSystemServicePr
             stmt.setString(1, event_name);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                Event event = new Event(); // use empty constructor
+                Event event = new Event();
                 event.setEventId(rs.getInt("event_id"));
                 event.setEventName(rs.getString("event_name"));
                 event.setAvailableSeats(rs.getInt("available_seats"));
@@ -69,7 +69,7 @@ public class BookingSystemServiceProviderImpl implements IBookingSystemServicePr
             int available_seats = 0;
             float ticket_price = 0;
 
-            // Step 1: Get Event Info
+            
             try (PreparedStatement stmt = conn.prepareStatement(getEventSQL)) {
                 stmt.setString(1, event_name);
                 ResultSet rs = stmt.executeQuery();
@@ -82,7 +82,7 @@ public class BookingSystemServiceProviderImpl implements IBookingSystemServicePr
                 }
             }
 
-            // Step 2: Check Seat Availability
+           
             if (available_seats < num_tickets) {
                 System.out.println("Not enough seats available.");
                 return false;
@@ -90,7 +90,7 @@ public class BookingSystemServiceProviderImpl implements IBookingSystemServicePr
 
             int customer_id = -1;
 
-            // Step 3: Insert Customer
+            
             try (PreparedStatement stmt = conn.prepareStatement(insertCustomerSQL, Statement.RETURN_GENERATED_KEYS)) {
                 stmt.setString(1, customer_name);
                 stmt.setString(2, email);
@@ -102,10 +102,10 @@ public class BookingSystemServiceProviderImpl implements IBookingSystemServicePr
                 }
             }
 
-            // Step 4: Calculate Total Cost (as float)
+            
             float totalCost = ticket_price * num_tickets;
 
-            // Step 5: Insert Booking
+            
             try (PreparedStatement stmt = conn.prepareStatement(insertBookingSQL)) {
                 stmt.setInt(1, event_id);
                 stmt.setInt(2, customer_id);
@@ -115,7 +115,7 @@ public class BookingSystemServiceProviderImpl implements IBookingSystemServicePr
                 stmt.executeUpdate();
             }
 
-            // Step 6: Update Available Seats
+            
             try (PreparedStatement stmt = conn.prepareStatement(updateSeatsSQL)) {
                 stmt.setInt(1, num_tickets);
                 stmt.setInt(2, event_id);
@@ -149,7 +149,7 @@ public class BookingSystemServiceProviderImpl implements IBookingSystemServicePr
             int event_id = -1;
             int num_tickets = 0;
 
-            // Get event_id and num_tickets from the booking
+            
             try (PreparedStatement stmt = conn.prepareStatement(getBookingSQL)) {
                 stmt.setInt(1, booking_id);
                 ResultSet rs = stmt.executeQuery();
@@ -161,13 +161,13 @@ public class BookingSystemServiceProviderImpl implements IBookingSystemServicePr
                 }
             }
 
-            // Delete the booking
+           
             try (PreparedStatement stmt = conn.prepareStatement(deleteBookingSQL)) {
                 stmt.setInt(1, booking_id);
                 stmt.executeUpdate();
             }
 
-            // Update available seats in the event
+           
             try (PreparedStatement stmt = conn.prepareStatement(updateSeatsSQL)) {
                 stmt.setInt(1, num_tickets);
                 stmt.setInt(2, event_id);
