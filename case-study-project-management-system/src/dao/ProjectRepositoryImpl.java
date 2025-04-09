@@ -22,8 +22,8 @@ public class ProjectRepositoryImpl implements IProjectRepository {
             stmt.setString(1, emp.getEmployeeName());
             stmt.setString(2, emp.getEmployeeDesignation());
             stmt.setString(3, emp.getEmployeeGender());
-            stmt.setDouble(4, emp.getEmployeeSalary());  // Assuming salary is a number
-            stmt.setInt(5, emp.getProjectId());  // Assuming project_id is an integer
+            stmt.setDouble(4, emp.getEmployeeSalary()); 
+            stmt.setInt(5, emp.getProjectId()); 
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -53,7 +53,7 @@ public class ProjectRepositoryImpl implements IProjectRepository {
     public boolean createTask(Task tk) {
         String sql = "INSERT INTO task(task_name, project_id, employee_id, status) VALUES (?,?,?,?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, tk.getTaskName());  // Corrected method name
+            stmt.setString(1, tk.getTaskName()); 
             stmt.setInt(2, tk.getProjectId());
             stmt.setInt(3, tk.getEmployeeId());
             stmt.setString(4, tk.getStatus());
@@ -103,13 +103,13 @@ public class ProjectRepositoryImpl implements IProjectRepository {
         String deleteEmployeeSql = "DELETE FROM employee WHERE employee_id = ?";
 
         try (Connection con = DBConnUtil.getConnection()) {
-            // First, delete tasks assigned to this employee
+           
             try (PreparedStatement deleteTasksStmt = con.prepareStatement(deleteTasksSql)) {
                 deleteTasksStmt.setInt(1, employee_id);
                 deleteTasksStmt.executeUpdate();
             }
 
-            // Now, delete the employee
+    
             try (PreparedStatement deleteEmployeeStmt = con.prepareStatement(deleteEmployeeSql)) {
                 deleteEmployeeStmt.setInt(1, employee_id);
                 return deleteEmployeeStmt.executeUpdate() > 0;
@@ -189,7 +189,7 @@ public class ProjectRepositoryImpl implements IProjectRepository {
                     rs.getString("task_name"),
                     rs.getInt("project_id"),
                     rs.getInt("employee_id"),
-                    rs.getString("status")  // Assuming status is a string
+                    rs.getString("status")  
                 ));
             }
         } catch (SQLException e) {
