@@ -70,7 +70,7 @@ public class ProjectApp {
 	
 	  private static void addEmployee(Scanner scanner, ProjectRepositoryImpl repo) {
 	        System.out.print("Enter Employee Name: ");
-	        scanner.nextLine();  // Consume newline
+	        scanner.nextLine();  
 	        String name = scanner.nextLine();
 	        System.out.print("Enter Designation: ");
 	        String designation = scanner.nextLine();
@@ -167,8 +167,8 @@ public class ProjectApp {
 
 	    private static void deleteTask (Scanner scanner, ProjectRepositoryImpl repo) throws TaskNotFoundException{
 	        System.out.print("Enter Task ID to delete: ");
-	        int taskId = scanner.nextInt();  // Variable is declared as taskId
-	        if (repo.deleteTask(taskId)) {   // Use taskId (not task_id)
+	        int taskId = scanner.nextInt(); 
+	        if (repo.deleteTask(taskId)) {   
 	            System.out.println("Task deleted successfully.");
 	        } else {
 	            System.out.println("Failed to delete task.");
