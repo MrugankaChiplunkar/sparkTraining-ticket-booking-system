@@ -65,4 +65,12 @@ public class Task {
 			throw new IllegalArgumentException("Invalid status value! Must be: assigned, started, completed");
 		}
 	}
+	
+	@Override
+	public String toString() {
+	    return "Task ID: " + task_id +
+	           ", Name: " + task_name +
+	           ", Status: " + status;
+	}
+
 }
